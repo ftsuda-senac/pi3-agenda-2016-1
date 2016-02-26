@@ -1,0 +1,10 @@
+Criar um aplicativo para cadastro de contatos, com as seguintes informações:
+Nome
+Data de nascimento
+E-mail
+Telefone
+Pode ser via console.
+1ª parte: Criar a entrada e saída (refletir os dados de entrada), sem conexão com o banco de dados.
+2ª parte: Integrar com banco de dados (salvar os dados no banco e listar os dados que estão cadastrados no banco).
+Fazer em duplas (um clona o repositório do outro)
+Entrega no Blackboard: enviar o link do Github da pessoa onde os arquivos-fontes foram “commitados”. Os dois devem ter fazer algum commit.
