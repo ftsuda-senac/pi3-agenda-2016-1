@@ -3,8 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.senac.tads.pi3.ftsuda82.agendaweb;
+package br.senac.tads.pi3.ftsuda82.agendaweb.servlet;
 
+import br.senac.tads.pi3.ftsuda82.agendaweb.dao.AgendaDAO;
+import br.senac.tads.pi3.ftsuda82.agendaweb.entity.Pessoa;
+import br.senac.tads.pi3.ftsuda82.agendaweb.util.Mensagem;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
@@ -14,6 +17,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -23,33 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 public class EntradaServlet extends HttpServlet {
 
   /**
-   * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-   * methods.
-   *
-   * @param request servlet request
-   * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
-   * @throws IOException if an I/O error occurs
-   */
-  protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-          throws ServletException, IOException {
-    response.setContentType("text/html;charset=UTF-8");
-    try (PrintWriter out = response.getWriter()) {
-      /* TODO output your page here. You may use following sample code. */
-      out.println("<!DOCTYPE html>");
-      out.println("<html>");
-      out.println("<head>");
-      out.println("<title>Servlet EntradaServlet</title>");
-      out.println("</head>");
-      out.println("<body>");
-      out.println("<h1>Servlet EntradaServlet at " + request.getContextPath() + "</h1>");
-      out.println("</body>");
-      out.println("</html>");
-    }
-  }
-
-  /**
-   * Handles the HTTP <code>GET</code> method.
+   * Recebe a requisição e encaminha para obter o HTML a partir do entrada.jsp
    *
    * @param request servlet request
    * @param response servlet response
@@ -59,11 +37,14 @@ public class EntradaServlet extends HttpServlet {
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
           throws ServletException, IOException {
-    processRequest(request, response);
+    //processRequest(request, response);
+    RequestDispatcher rd
+            = request.getRequestDispatcher("/WEB-INF/jsp/entrada.jsp");
+    rd.forward(request, response);
   }
 
   /**
-   * Handles the HTTP <code>POST</code> method.
+   * Recebe os dados preenchidos pelo usuário no form de entrada.
    *
    * @param request servlet request
    * @param response servlet response
@@ -77,15 +58,23 @@ public class EntradaServlet extends HttpServlet {
     String nome = request.getParameter("nomeparam");
     String email = request.getParameter("email");
     String telefone = request.getParameter("telefone");
+    
+    //VALIDAR DADOS!!!
 
     Pessoa pessoa = new Pessoa(nome, new Date(), email, telefone);
     AgendaDAO dao = new AgendaDAO();
     //dao.incluirPessoa(nome, null, telefone, email);
-    
-    request.setAttribute("pessoa", pessoa);
-    RequestDispatcher rd
-            = request.getRequestDispatcher("resultado.jsp");
-    rd.forward(request, response);
+
+//    request.setAttribute("pessoa", pessoa);
+//    RequestDispatcher rd
+//            = request.getRequestDispatcher("/WEB-INF/jsp/resultado.jsp");
+//    rd.forward(request, response);
+
+    // *** Em vez do forward, uso do POST-REDIRECT-GET (Por que???) ***
+    HttpSession sessao = request.getSession(true);
+    String texto = "'" + nome + "' incluido com sucesso";
+    sessao.setAttribute("msg", new Mensagem(texto, "success"));
+    response.sendRedirect("ResultadoServlet");
   }
 
   /**

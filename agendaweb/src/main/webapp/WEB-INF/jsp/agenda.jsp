@@ -10,8 +10,10 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <title>JSP Page</title>
+    <link rel="stylesheet" href="<c:url value='resources/css/estilos.css' />" />
+    <script src="<c:url value='resources/js/funcoes.js' />"></script>
   </head>
   <body>
     <c:forEach items="${lista}" var="pes">

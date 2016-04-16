@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.senac.tads.pi3.ftsuda82.agendaweb;
+package br.senac.tads.pi3.ftsuda82.agendaweb.dao;
 
+import br.senac.tads.pi3.ftsuda82.agendaweb.entity.Pessoa;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;

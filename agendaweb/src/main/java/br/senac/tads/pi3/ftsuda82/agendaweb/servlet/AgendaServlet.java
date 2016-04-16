@@ -3,8 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package br.senac.tads.pi3.ftsuda82.agendaweb;
+package br.senac.tads.pi3.ftsuda82.agendaweb.servlet;
 
+import br.senac.tads.pi3.ftsuda82.agendaweb.dao.AgendaDAO;
+import br.senac.tads.pi3.ftsuda82.agendaweb.entity.Pessoa;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -75,7 +77,7 @@ public class AgendaServlet extends HttpServlet {
     request.setAttribute("lista", lista);
 
     RequestDispatcher rd
-            = request.getRequestDispatcher("agenda.jsp");
+            = request.getRequestDispatcher("/WEB-INF/jsp/agenda.jsp");
     rd.forward(request, response);
 
   }
