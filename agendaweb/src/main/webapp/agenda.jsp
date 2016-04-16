@@ -9,20 +9,20 @@
 <%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
-    </head>
-    <body>
-        <c:forEach items="${lista}" var="pes">
-        <h1>${pes.nome}</h1>
-        <p>Id: ${pes.id}</p>
-        <p>Data de nascimento:
-            <fmt:formatDate value="${pes.dtNascimento}" 
-                            pattern="dd/MM/yyyy" />
-        </p>
-        <p>E-mail: ${pes.email}</p>
-        <p>Telefone: ${pes.telefone}</p>
-        </c:forEach>
-    </body>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>JSP Page</title>
+  </head>
+  <body>
+    <c:forEach items="${lista}" var="pes">
+      <h1>${pes.nome}</h1>
+      <p>Id: ${pes.id}</p>
+      <p>Data de nascimento:
+        <fmt:formatDate value="${pes.dtNascimento}" 
+                        pattern="dd/MM/yyyy" />
+      </p>
+      <p>E-mail: ${pes.email}</p>
+      <p>Telefone: ${pes.telefone}</p>
+    </c:forEach>
+  </body>
 </html>
