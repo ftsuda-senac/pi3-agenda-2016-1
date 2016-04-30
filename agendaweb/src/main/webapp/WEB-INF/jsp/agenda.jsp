@@ -16,15 +16,28 @@
     <script src="<c:url value='resources/js/funcoes.js' />"></script>
   </head>
   <body>
-    <c:forEach items="${lista}" var="pes">
-      <h1>${pes.nome}</h1>
-      <p>Id: ${pes.id}</p>
-      <p>Data de nascimento:
-        <fmt:formatDate value="${pes.dtNascimento}" 
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Data nascimento</th>
+        <th>E-mail</th>
+        <th>Telefone</th>
+        <th>&nbsp;</th>
+      </tr>
+      <c:forEach items="${lista}" var="pes">
+        <tr>
+          <td>${pes.id}</td>
+          <td>${pes.nome}</td>
+          <td>
+            <fmt:formatDate value="${pes.dtNascimento}" 
                         pattern="dd/MM/yyyy" />
-      </p>
-      <p>E-mail: ${pes.email}</p>
-      <p>Telefone: ${pes.telefone}</p>
-    </c:forEach>
+          </td>
+          <td>${pes.email}</td>
+          <td>${pes.telefone}</td>
+          <td><a href="TesteServlet?id=${pes.id}">Tela de teste</a></td>
+        </tr>
+      </c:forEach>
+    </table>
   </body>
 </html>

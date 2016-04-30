@@ -63,7 +63,7 @@ public class EntradaServlet extends HttpServlet {
 
     Pessoa pessoa = new Pessoa(nome, new Date(), email, telefone);
     AgendaDAO dao = new AgendaDAO();
-    //dao.incluirPessoa(nome, null, telefone, email);
+    dao.incluirPessoaComTransacao(pessoa);
 
 //    request.setAttribute("pessoa", pessoa);
 //    RequestDispatcher rd

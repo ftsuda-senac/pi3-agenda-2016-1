@@ -28,169 +28,282 @@ import java.util.logging.Logger;
  */
 public class AgendaDAO {
 
-    private Connection obterConexao() throws SQLException, ClassNotFoundException {
-        Connection conn = null;
-        // Passo 1: Registrar driver JDBC.
-        Class.forName("org.apache.derby.jdbc.ClientDataSource");
+  private Connection obterConexao() throws SQLException, ClassNotFoundException {
+    Connection conn = null;
+    // Passo 1: Registrar driver JDBC.
+    Class.forName("org.apache.derby.jdbc.ClientDataSource");
 
-        // Passo 2: Abrir a conexão
-        conn = DriverManager.getConnection(
-                "jdbc:derby://localhost:1527/agendabd;SecurityMechanism=3",
-                "app", // usuario
-                "app"); // senha
-        return conn;
-    }
+    // Passo 2: Abrir a conexão
+    conn = DriverManager.getConnection(
+            "jdbc:derby://localhost:1527/agendabd;SecurityMechanism=3",
+            "app", // usuario
+            "app"); // senha
+    return conn;
+  }
 
-    public List<Pessoa> listarPessoas() {
-        Statement stmt = null;
-        Connection conn = null;
+  public Pessoa obterPessoa(long idPessoa) {
+    PreparedStatement stmt = null;
+    Connection conn = null;
+    Pessoa p = null;
 
-        String sql = "SELECT ID_CONTATO, NM_CONTATO, DT_NASCIMENTO, VL_TELEFONE, VL_EMAIL "
-                + "FROM TB_CONTATO";
+    String sql = "SELECT ID_CONTATO, NM_CONTATO, DT_NASCIMENTO, VL_TELEFONE, VL_EMAIL "
+            + "FROM TB_CONTATO WHERE ID_CONTATO = ?";
+    try {
+      conn = obterConexao();
+      stmt = conn.prepareStatement(sql);
+      stmt.setLong(1, idPessoa);
+      ResultSet resultados = stmt.executeQuery();
 
-        List<Pessoa> lista = new ArrayList<Pessoa>();
+      while (resultados.next()) {
+        Long id = resultados.getLong("ID_CONTATO");
+        String nome = resultados.getString("NM_CONTATO");
+        Date dataNasc = resultados.getDate("DT_NASCIMENTO");
+        String email = resultados.getString("VL_EMAIL");
+        String telefone = resultados.getString("VL_TELEFONE");
+        p = new Pessoa(id, nome, dataNasc, email, telefone);
+        break;
+      }
+    } catch (SQLException ex) {
+      Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (ClassNotFoundException ex) {
+      Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+      // Código colocado aqui para garantir que a conexão com o banco
+      // seja sempre fechada, independentemente se executado com sucesso
+      // ou erro.
+      if (stmt != null) {
         try {
-            conn = obterConexao();
-            stmt = conn.createStatement();
-            ResultSet resultados = stmt.executeQuery(sql);
+          stmt.close();
+        } catch (SQLException ex) {
+          Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+      if (conn != null) {
+        try {
+          conn.close();
+        } catch (SQLException ex) {
+          Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+    }
+    return p;
+  }
 
-            DateFormat formatadorData = new SimpleDateFormat("dd/MM/yyyy");
+  public List<Pessoa> listarPessoas() {
+    Statement stmt = null;
+    Connection conn = null;
 
-            while (resultados.next()) {
-                Long id = resultados.getLong("ID_CONTATO");
-                String nome = resultados.getString("NM_CONTATO");
-                Date dataNasc = resultados.getDate("DT_NASCIMENTO");
-                String email = resultados.getString("VL_EMAIL");
-                String telefone = resultados.getString("VL_TELEFONE");
+    String sql = "SELECT ID_CONTATO, NM_CONTATO, DT_NASCIMENTO, VL_TELEFONE, VL_EMAIL "
+            + "FROM TB_CONTATO";
+
+    List<Pessoa> lista = new ArrayList<Pessoa>();
+    try {
+      conn = obterConexao();
+      stmt = conn.createStatement();
+      ResultSet resultados = stmt.executeQuery(sql);
+
+      DateFormat formatadorData = new SimpleDateFormat("dd/MM/yyyy");
+
+      while (resultados.next()) {
+        Long id = resultados.getLong("ID_CONTATO");
+        String nome = resultados.getString("NM_CONTATO");
+        Date dataNasc = resultados.getDate("DT_NASCIMENTO");
+        String email = resultados.getString("VL_EMAIL");
+        String telefone = resultados.getString("VL_TELEFONE");
 //                System.out.println(String.valueOf(id) + ", " + nome + ", "
 //                        + formatadorData.format(dataNasc) + ", " + email + ", "
 //                        + telefone);
-                Pessoa p = new Pessoa(id, nome, dataNasc, 
-                        email, telefone);
-                lista.add(p);
-            }
+        Pessoa p = new Pessoa(id, nome, dataNasc,
+                email, telefone);
+        lista.add(p);
+      }
 
-        } catch (SQLException ex) {
-            Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            // Código colocado aqui para garantir que a conexão com o banco
-            // seja sempre fechada, independentemente se executado com sucesso
-            // ou erro.
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        }
-        return lista;
-    }
-
-    public void incluirPessoa(String nome, Date dataNasc, String telefone, String email) {
-        PreparedStatement stmt = null;
-        Connection conn = null;
-
-        String sql = "INSERT INTO TB_CONTATO "
-                + "(NM_CONTATO, DT_NASCIMENTO, VL_TELEFONE, VL_EMAIL, DT_CADASTRO) "
-                + "VALUES (?, ?, ?, ?, ?)";
+    } catch (SQLException ex) {
+      Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (ClassNotFoundException ex) {
+      Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+      // Código colocado aqui para garantir que a conexão com o banco
+      // seja sempre fechada, independentemente se executado com sucesso
+      // ou erro.
+      if (stmt != null) {
         try {
-            conn = obterConexao();
-            stmt = conn.prepareStatement(sql);
-            stmt.setString(1, nome);
-            stmt.setDate(2, new java.sql.Date(dataNasc.getTime()));
-            stmt.setString(3, telefone);
-            stmt.setString(4, email);
-            stmt.setDate(5, new java.sql.Date(System.currentTimeMillis()));
-            stmt.executeUpdate();
-            System.out.println("Registro incluido com sucesso.");
-
+          stmt.close();
         } catch (SQLException ex) {
-            Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            if (stmt != null) {
-                try {
-                    stmt.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            if (conn != null) {
-                try {
-                    conn.close();
-                } catch (SQLException ex) {
-                    Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+          Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
+      }
+      if (conn != null) {
+        try {
+          conn.close();
+        } catch (SQLException ex) {
+          Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
     }
+    return lista;
+  }
 
-    public static void main(String[] args) {
-        AgendaDAO instancia = new AgendaDAO();
-        Scanner entrada = new Scanner(System.in);
-        do {
-            System.out.println("********** DIGITE UMA OPÇÃO **********");
-            System.out.println("(1) Listar agenda");
-            System.out.println("(2) Incluir registro");
-            System.out.println("(3) Alterar registro");
-            System.out.println("(4) Excluir registro");
-            System.out.println("(9) SAIR");
-            System.out.print("Opção: ");
-            int opcao = entrada.nextInt();
+  // http://stackoverflow.com/questions/17459094/getting-id-after-insert-within-a-transaction-oracle
+  public void incluirPessoaComTransacao(Pessoa pessoa) {
+    PreparedStatement stmt = null;
+    Connection conn = null;
 
-            switch (opcao) {
-                case 1:
-                    instancia.listarPessoas();
-                    break;
-                case 2:
-                    String nome;
-                    Date dataNasc;
-                    String email;
-                    String telefone;
+    String sql = "INSERT INTO TB_CONTATO "
+            + "(NM_CONTATO, DT_NASCIMENTO, VL_TELEFONE, VL_EMAIL, DT_CADASTRO) "
+            + "VALUES (?, ?, ?, ?, ?)";
+    try {
+      conn = obterConexao();
 
-                    // ENTRADA DE DADOS
-                    System.out.print("Digite o nome da pessoa: ");
-                    nome = entrada.nextLine();
-
-                    System.out.print("Digite a data de nascimento no formato dd/mm/aaaa: ");
-                    String strDataNasc = entrada.nextLine();
-                    DateFormat formatadorData = new SimpleDateFormat("dd/MM/yyyy");
-                    try {
-                        dataNasc = formatadorData.parse(strDataNasc);
-                    } catch (ParseException ex) {
-                        Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
-                        dataNasc = new Date();
-                    }
-                    System.out.print("Digite o telefone no formato 99 99999-9999: ");
-                    telefone = entrada.nextLine();
-
-                    System.out.print("Digite o e-mail: ");
-                    email = entrada.nextLine();
-
-                    instancia.incluirPessoa(nome, dataNasc, telefone, email);
-                    break;
-                case 3:
-                    break;
-                case 4:
-                    break;
-                case 9:
-                    System.exit(0);
-                default:
-                    System.out.println("OPÇÃO INVÁLIDA.");
-            }
-
-        } while (true);
+      conn.setAutoCommit(false); // Permite usar transacoes para multiplos comandos no banco de dados
+      stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+      stmt.setString(1, pessoa.getNome());
+      stmt.setDate(2, new java.sql.Date(pessoa.getDtNascimento().getTime()));
+      stmt.setString(3, pessoa.getTelefone());
+      stmt.setString(4, pessoa.getEmail());
+      stmt.setDate(5, new java.sql.Date(System.currentTimeMillis()));
+      
+      stmt.executeUpdate();
+      
+      ResultSet generatedKeys = stmt.getGeneratedKeys();
+      if (generatedKeys.next()) {
+        long idNovo = generatedKeys.getLong(1);
+        System.out.println("***** ID NOVO CADASTRADO: " + String.valueOf(idNovo));
+        
+        // Executar próximos INSERTs USANDO O ID novo.
+      }
+      conn.commit();
+    } catch (SQLException ex) {
+      try {
+        if (conn != null & !conn.isClosed()) {
+          conn.rollback();
+        }
+      } catch (SQLException ex1) {
+        Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex1);
+      }
+      Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (ClassNotFoundException ex) {
+      try {
+        if (conn != null & !conn.isClosed()) {
+          conn.rollback();
+        }
+      } catch (SQLException ex1) {
+        Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex1);
+      }
+      Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+      if (stmt != null) {
+        try {
+          stmt.close();
+        } catch (SQLException ex) {
+          Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+      if (conn != null) {
+        try {
+          conn.close();
+        } catch (SQLException ex) {
+          Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
     }
+  }
+
+  public void incluirPessoa(Pessoa pessoa) {
+    PreparedStatement stmt = null;
+    Connection conn = null;
+
+    String sql = "INSERT INTO TB_CONTATO "
+            + "(NM_CONTATO, DT_NASCIMENTO, VL_TELEFONE, VL_EMAIL, DT_CADASTRO) "
+            + "VALUES (?, ?, ?, ?, ?)";
+    try {
+      conn = obterConexao();
+      stmt = conn.prepareStatement(sql);
+      stmt.setString(1, pessoa.getNome());
+      stmt.setDate(2, new java.sql.Date(pessoa.getDtNascimento().getTime()));
+      stmt.setString(3, pessoa.getTelefone());
+      stmt.setString(4, pessoa.getEmail());
+      stmt.setDate(5, new java.sql.Date(System.currentTimeMillis()));
+      stmt.executeUpdate();
+      //System.out.println("Registro incluido com sucesso.");
+
+    } catch (SQLException ex) {
+      Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (ClassNotFoundException ex) {
+      Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+    } finally {
+      if (stmt != null) {
+        try {
+          stmt.close();
+        } catch (SQLException ex) {
+          Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+      if (conn != null) {
+        try {
+          conn.close();
+        } catch (SQLException ex) {
+          Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+    }
+  }
+
+  public static void main(String[] args) {
+    AgendaDAO instancia = new AgendaDAO();
+    Scanner entrada = new Scanner(System.in);
+    do {
+      System.out.println("********** DIGITE UMA OPÇÃO **********");
+      System.out.println("(1) Listar agenda");
+      System.out.println("(2) Incluir registro");
+      System.out.println("(3) Alterar registro");
+      System.out.println("(4) Excluir registro");
+      System.out.println("(9) SAIR");
+      System.out.print("Opção: ");
+      int opcao = entrada.nextInt();
+
+      switch (opcao) {
+        case 1:
+          instancia.listarPessoas();
+          break;
+        case 2:
+          String nome;
+          Date dataNasc;
+          String email;
+          String telefone;
+
+          // ENTRADA DE DADOS
+          System.out.print("Digite o nome da pessoa: ");
+          nome = entrada.nextLine();
+
+          System.out.print("Digite a data de nascimento no formato dd/mm/aaaa: ");
+          String strDataNasc = entrada.nextLine();
+          DateFormat formatadorData = new SimpleDateFormat("dd/MM/yyyy");
+          try {
+            dataNasc = formatadorData.parse(strDataNasc);
+          } catch (ParseException ex) {
+            Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
+            dataNasc = new Date();
+          }
+          System.out.print("Digite o telefone no formato 99 99999-9999: ");
+          telefone = entrada.nextLine();
+
+          System.out.print("Digite o e-mail: ");
+          email = entrada.nextLine();
+
+          //instancia.incluirPessoa(nome, dataNasc, telefone, email);
+          break;
+        case 3:
+          break;
+        case 4:
+          break;
+        case 9:
+          System.exit(0);
+        default:
+          System.out.println("OPÇÃO INVÁLIDA.");
+      }
+
+    } while (true);
+  }
 
 }
