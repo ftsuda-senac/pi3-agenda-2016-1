@@ -145,6 +145,7 @@ public class AgendaDAO {
   }
 
   // http://stackoverflow.com/questions/17459094/getting-id-after-insert-within-a-transaction-oracle
+  // http://www.mkyong.com/jdbc/jdbc-transaction-example/
   public void incluirPessoaComTransacao(Pessoa pessoa) {
     PreparedStatement stmt = null;
     Connection conn = null;
@@ -165,6 +166,8 @@ public class AgendaDAO {
       
       stmt.executeUpdate();
       
+      // ResultSet para recuperar o ID gerado automaticamente no banco de dados.
+      // Neste exemplo, o ID é gerado automaticamente.
       ResultSet generatedKeys = stmt.getGeneratedKeys();
       if (generatedKeys.next()) {
         long idNovo = generatedKeys.getLong(1);
@@ -175,6 +178,7 @@ public class AgendaDAO {
       conn.commit();
     } catch (SQLException ex) {
       try {
+        // Caso ocorra algum erro, tenta desfazer todas as ações realizadas no BD.
         if (conn != null & !conn.isClosed()) {
           conn.rollback();
         }
@@ -184,6 +188,7 @@ public class AgendaDAO {
       Logger.getLogger(AgendaDAO.class.getName()).log(Level.SEVERE, null, ex);
     } catch (ClassNotFoundException ex) {
       try {
+        // Caso ocorra algum erro, tenta desfazer todas as ações realizadas no BD.
         if (conn != null & !conn.isClosed()) {
           conn.rollback();
         }
