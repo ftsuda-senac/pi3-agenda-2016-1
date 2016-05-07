@@ -16,6 +16,7 @@
     <script src="<c:url value='resources/js/funcoes.js' />"></script>
   </head>
   <body>
+    <p>Usuário logado: <c:out value="${sessionScope.usuario.nome}" /></p>
     <table>
       <tr>
         <th>ID</th>
@@ -35,9 +36,11 @@
           </td>
           <td>${pes.email}</td>
           <td>${pes.telefone}</td>
-          <td><a href="TesteServlet?id=${pes.id}">Tela de teste</a></td>
+          <td><a href="${pageContext.request.contextPath}/protegido/TesteServlet?id=${pes.id}">Tela de teste</a></td>
         </tr>
       </c:forEach>
     </table>
+    <p><a href="EntradaServlet">EntradaServlet</a></p>
+    <p><a href="Logout">Sair</a></p>
   </body>
 </html>

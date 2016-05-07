@@ -29,6 +29,6 @@
       </c:otherwise>
     </c:choose>
     <p>Mensagem genérica</p>
-    <a href="AgendaServlet">Voltar</a>
+    <a href="${pageContext.request.contextPath}/AgendaServlet">Voltar</a>
   </body>
 </html>

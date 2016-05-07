@@ -77,7 +77,7 @@ public class AgendaServlet extends HttpServlet {
     request.setAttribute("lista", lista);
 
     RequestDispatcher rd
-            = request.getRequestDispatcher("/WEB-INF/jsp/agenda.jsp");
+            = request.getRequestDispatcher("/WEB-INF/jsp/agenda.jspx");
     rd.forward(request, response);
 
   }
